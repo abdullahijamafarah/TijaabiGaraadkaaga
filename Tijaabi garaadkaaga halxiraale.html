@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1020">
+<title>Tartan Maskaxeed</title>
+<style>
+:root{
+  --bg:#080b16;--card:#10172a;--card2:#151e35;--text:#f7f8fc;
+  --muted:#aeb7cc;--gold:#f4c95d;--gold2:#ffe7a0;--line:#27324d;
+  --good:#58d68d;--bad:#ff6b81;--shadow:0 20px 60px rgba(0,0,0,.35)
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+background:radial-gradient(circle at 50% -10%,#202d52 0,#0b1020 42%,#070a13 100%);
+color:var(--text);display:flex;justify-content:center}
+button,input{font:inherit}
+.app{width:min(760px,100%);padding:22px 16px 40px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.logo{display:flex;gap:10px;align-items:center;font-weight:800;letter-spacing:.3px}
+.logo span{font-size:28px}.mini{color:var(--muted);font-size:13px}
+.screen{display:none}.screen.active{display:block}
+.card{background:linear-gradient(145deg,rgba(21,30,53,.97),rgba(12,18,34,.98));
+border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);padding:28px}
+.hero{text-align:center;padding:42px 26px}
+.hero .brain{font-size:68px;margin-bottom:10px}
+h1{font-size:clamp(30px,7vw,48px);margin:0 0 10px}
+h2{font-size:26px;margin:0 0 12px}
+p{color:var(--muted);line-height:1.65}
+.gold{color:var(--gold)}
+.btn{width:100%;border:0;border-radius:15px;padding:15px 18px;font-weight:800;cursor:pointer;
+transition:.18s; margin-top:12px}
+.btn.primary{background:linear-gradient(135deg,var(--gold),#e6a93f);color:#17120a}
+.btn.secondary{background:#1b2640;color:var(--text);border:1px solid #33415f}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.note{margin-top:18px;font-size:13px;color:#8f9ab1}
+.progress-row{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14px;margin-bottom:9px}
+.progress{height:8px;background:#202a42;border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#fff0b0);border-radius:99px;width:0;transition:.3s}
+.question{font-size:24px;line-height:1.45;margin:28px 0 20px}
+.options{display:grid;gap:11px}
+.option{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:15px;
+background:#121b30;border:1px solid #2a3857;color:var(--text);border-radius:15px;cursor:pointer;transition:.18s}
+.option:hover{border-color:#6b7794;transform:translateY(-1px)}
+.option.selected{border-color:var(--gold);background:#211e18;box-shadow:0 0 0 1px rgba(244,201,93,.15)}
+.letter{width:35px;height:35px;display:grid;place-items:center;border-radius:10px;background:#202c48;color:var(--gold);font-weight:900;flex:none}
+.reason{margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
+.reason label{display:block;font-weight:800;margin-bottom:8px}
+.reason textarea{width:100%;min-height:110px;resize:vertical;background:#0b1222;color:var(--text);
+border:1px solid #2a3857;border-radius:14px;padding:13px;outline:none}
+.reason textarea:focus{border-color:var(--gold)}
+.result{text-align:center}
+.score{font-size:68px;font-weight:900;line-height:1;margin:15px 0 5px;color:var(--gold)}
+.level{display:inline-block;padding:9px 15px;border-radius:999px;background:#201d14;color:var(--gold2);font-weight:900}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:25px 0}
+.stat{background:#0c1426;border:1px solid var(--line);border-radius:16px;padding:15px}
+.stat b{display:block;font-size:21px}.stat span{color:var(--muted);font-size:12px}
+.review{margin-top:22px;text-align:left}
+.review-item{background:#0c1426;border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:12px}
+.review-item h3{margin:0 0 10px;font-size:16px}
+.badge{font-size:12px;font-weight:900;margin-bottom:8px;display:inline-block;padding:5px 9px;border-radius:8px}
+.badge.good{background:rgba(88,214,141,.12);color:var(--good)}
+.badge.bad{background:rgba(255,107,129,.12);color:var(--bad)}
+.small{font-size:13px;color:var(--muted);line-height:1.6}
+.sharebox{margin-top:18px;padding:15px;border:1px dashed #4b5872;border-radius:15px;color:var(--muted);font-size:13px}
+.alert-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.alert-box {
+  width: 100%;
+  max-width: 380px;
+  background: #fff;
+  border-radius: 22px;
+  padding: 30px 25px 25px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: alertPop 0.25s ease;
+}
+
+.alert-icon {
+  width: 55px;
+  height: 55px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  background: #fff3cd;
+  color: #d39e00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.alert-box h3 {
+  margin: 0 0 10px;
+  font-size: 21px;
+  color: #222;
+}
+
+.alert-box p {
+  margin: 0 0 22px;
+  color: #666;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.alert-box button {
+  width: 100%;
+  border: 0;
+  padding: 13px;
+  border-radius: 12px;
+  background: #111827;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.alert-box button:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+@keyframes alertPop {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.hidden{display:none!important}
+@media(max-width:520px){.card{padding:21px;border-radius:22px}.question{font-size:21px}.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="top">
+    <div class="logo"><span>🧠</span> Tartan Maskaxeed</div>
+    <div class="mini">15 su'aalood</div>
+  </div>
+<div id="alertModal" class="alert-modal">
+  <div class="alert-box">
+    <div class="alert-icon">!</div>
+    <h3 id="alertTitle">Fariin</h3>
+    <p id="alertMessage"></p>
+    <button onclick="closeAlert()">OK</button>
+  </div>
+</div>
+  <section id="start" class="screen active">
+    <div class="card hero">
+      <div class="brain">🧠</div>
+      <h1>Ma ka adkaan kartaa?</h1>
+      <p>Isku tijaabi su'aalo caqli, xisaab iyo halxiraale. Natiijadaada lama tusayo ilaa aad dhamayso.</p>
+      <button class="btn primary" onclick="startGame()">BILOW TARTANKA</button>
+      <div class="note">Jawaab kasta kadib, sheeg sababta aad u dooratay.</div>
+    </div>
+  </section>
+
+  <section id="game" class="screen">
+    <div class="card">
+      <div class="progress-row"><span id="counter">Su'aal 1 / 15</span><span id="time">00:00</span></div>
+      <div class="progress"><i id="bar"></i></div>
+      <div id="question" class="question"></div>
+      <div id="options" class="options"></div>
+      <div class="reason">
+        <label for="why">Maxaa kugu kalifay inaad doorato?</label>
+        <textarea id="why" placeholder="Si kooban u sharax fikirkaaga..."></textarea>
+        <button class="btn primary" id="next" onclick="nextQuestion()">U GUDBI SU'AASHA XIGTA</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="screen">
+    <div class="card result">
+      <div style="font-size:55px">🏆</div>
+      <h2>NATIIJADAADA</h2>
+      <div id="score" class="score">0 / 15</div>
+      <div id="level" class="level"></div>
+      <p id="message"></p>
+      <div class="stats">
+        <div class="stat"><b id="percent">0%</b><span>Boqolkiiba</span></div>
+        <div class="stat"><b id="duration">00:00</b><span>Waqtiga</span></div>
+        <div class="stat"><b id="wrong">0</b><span>Khaladaad</span></div>
+      </div>
+      <button class="btn primary" onclick="showReview()">EE JAWAABAHA IYO SABABAHA</button>
+      <button class="btn secondary" onclick="shareResult()">LA WADAAG NATIIJADAYDA</button>
+      <button class="btn secondary" onclick="location.reload()">MAR KALE ISKU DAY</button>
+      <div id="review" class="review hidden"></div>
+      <div id="shareNote" class="sharebox hidden"></div>
+      <div class="note">© 2026 • Tartan Maskaxeed</div>
+    </div>
+  </section>
+</main>
+
+<script>
+const questions=[
+{q:"Nin ayaa maalin kasta gala qol ay ku jiraan boqollaal qof, laakiin waligiis qofna lama kulmo, qofna lama hadlo. Si kastaba ha ahaatee, wuxuu ka helaa qolkaa wax uu aad ugu baahan yahay. Qolku waa maxay, maxaase uu ka helaa?",o:["Isbitaal, caafimaad","Maktabad, aqoon","Masaajid, cibaado","Suuq, lacag"],a:1,e:"Waa maktabad, wuxuuna ka helaa aqoon."},
+{q:"Dhakhtar ayaa bukaankiisa siiyay 3 kaniini wuxuuna ku yiri: “Hal kaniini cab nus saac kasta.” Imisa waqti ah ayay qaadanaysaa inuu dhammeeyo 3-da kaniini?",o:["30 daqiiqo","1 saac","1 saac iyo 30 daqiiqo","2 saac"],a:1,e:"Kaniiniga koowaad isla markiiba, kan labaad 30 daqiiqo kadib, kan saddexaadna 30 daqiiqo kadib. Wadartu waa 1 saac."},
+{q:"Markasta oo aad wax ka qaaddo, wuu sii weynaanayaa. Laakiin haddii aad wax ku darto, wuu sii yaraanayaa. Waa maxay?",o:["Boorso","God","Sanduuq","Webi"],a:1,e:"Waa god; marka wax laga qaado wuu weynaanayaa, marka wax lagu darana wuu yaraanayaa."},
+{q:"Waxaad iga qaadi kartaa adigoon gacantaada ii soo taaban. Waxaad iga lumin kartaa adigoon meelna ii dirin. Haddii aad i ilaalisana, mar walba waan kula jiri karaa. Waa maxay?",o:["Sir","Hoos","Waqti","Xusuus"],a:0,e:"Waa sir. Sir waa la qaadi karaa, waa la lumin karaa haddii la ogaado, waana la ilaalin karaa."},
+{q:"Waxaa jira wax aad si fiican u garanayso markaad haysato, laakiin marka aad isku daydo inaad qof kale u sharaxdo, waxaad ogaanaysaa inaadan si dhab ah u garanayn. Waa maxay?",o:["Xusuus","Faham","Magac","Dareen"],a:1,e:"Waa faham. Marka aad sharaxayso ayaad mararka qaar ogaanaysaa meelaha fahamkaagu ka dhiman yahay."},
+{q:"Nin ayaa arkay laba qof oo wada socda. Wuxuu yiri: “Labadooduba way iga horreeyaan, laakiin midkoodna meel aan joogo kama fogaan karo.” Waa maxay labadaas?",o:["Shalay iyo berri","Aabbe iyo wiil","Saaxiib iyo walaal","Hoos iyo iftiin"],a:0,e:"Waa shalay iyo berri; labaduba waxay la xiriiraan waqtiga, mana aha wax meel ahaan laga fogaan karo."},
+{q:"Waxaad haysataa wax aan miisaan lahayn, laakiin mararka qaarkood wuxuu qof ka culaysin karaa buur. Ma muuqdo, gacanta laguma qaban karo, haddana qof ayaa sannado badan la noolaan kara. Waa maxay?",o:["Hawo","Fikir","Culays maskaxeed","Hoos"],a:2,e:"Waa culays maskaxeed; miisaan jireed ma laha, laakiin qofka wuxuu ku keeni karaa culays muddo dheer."},
+{q:"Waxaad aragtaa nin meel taagan. Roob xoog leh ayaa da'aya. Dallad ma haysto, meel uu ku dhuuntana ma joogo, haddana hal dhibic oo biyo ah timihiisa kuma dhicin. Sidee?",o:["Roobku isaga ma gaarayo","Wuxuu xirnaa koofiyad","Waa bidaar oo timo ma leh","Wuxuu taagnaa meel saqaf leh"],a:2,e:"Ninku waa bidaar, sidaas darteed timaha wax roob ahi kuma dhicin."},
+{q:"Waxaad aragtaa qof si joogto ah u raadinaya wax uu horey u haystay. Markuu helo, wuxuu ogaadaa inuusan waligiis lumin. Muxuu raadinayay?",o:["Lacagtiisa","Gurigiisa","Naftiisa","Telefoonkiisa"],a:2,e:"Wuxuu raadinayay naftiisa; waa halxiraale ku saabsan is-aqoonsiga."},
+{q:"Waxaa jira wax marka aad dadka oo dhan la wadaagto, qiimihiisu yaraado; marka aad hal qof oo aad ku kalsoon tahay la wadaagto, qiimihiisu kordho; marka aad cidna la wadaagin, mararka qaar qiimihiisu ugu sarreeyo. Waa maxay?",o:["Lacag","Sir","Cunto","Magac"],a:1,e:"Waa sir; marka dad badan ogaadaan sirnimadeedu way yaraataa."},
+{q:"Nin ayaa yiri: “Waxaan leeyahay laba nolol. Midda koowaad dadka ayaa i yaqaan; midda labaad aniga keliya ayaa og.” Maxay yihiin labadaas nolol?",o:["Nolol maalmeedkiisa iyo safarkiisa","Qofka uu dadka tuso iyo qofka uu gudaha ka yahay","Carruurnimadiisa iyo gabowgiisa","Shaqadiisa iyo waxbarashadiisa"],a:1,e:"Waa qofka uu dadka tuso iyo qofka uu gudaha ka yahay."},
+{q:"Waxaad leedahay qof aad si fiican u taqaan. Maalin ayuu sameeyaa wax aad si buuxda uga soo horjeeddo. Dadku waxay ku yiraahdaan: “Waxaad aragtay qofka dhabta ah.” Laakiin adigu waxaad leedahay: “Maya, hadda ayaan arkay hal dhinac oo kale oo isaga ka mid ah.” Labada hadal kee baa sax ah?",o:["Dadka kale ayaa sax ah","Adiga ayaa sax ah","Labaduba way saxnaan karaan","Labaduba waa khaldan yihiin"],a:2,e:"Labaduba way saxnaan karaan; hal ficil wuxuu muujin karaa dhinac dhab ah, balse qofka oo dhan ma qeexo."},
+{q:"Waxaad qof weydiisay: “Maxaad samayn lahayd haddii aad ogaan lahayd in qof kasta oo aad maanta la kulanto uu xasuusan doono hal jumlad oo aad tiraahdo?” Su'aashani maxay dhab ahaantii kaa rabtaa inaad ka fikirto?",o:["Sida loo noqdo qof caan ah","Mas'uuliyadda iyo saamaynta hadalkaaga","Sida dadka loo qanciyo","Sida loo hadlo wax badan"],a:1,e:"Waxay kaa rabtaa inaad ka fikirto mas'uuliyadda iyo saamaynta hadalkaaga."},
+{q:"Waxaa jira wax qofku marka uu yar yahay u arko inuu yahay xabsi, marka uu weynaadana u arko inuu yahay meel uu ku laaban lahaa. Waa maxay?",o:["Iskuulka","Shaqada","Guriga carruurnimada","Magaalada uu ku dhashay"],a:0,e:"Jawaabta la doonayo waa iskuulka; ilmuhu wuxuu u arki karaa waajib, qof weynna wuxuu u xiisi karaa xilligii iskuulka."},
+{q:"Nin ayaa yiri: “Waxaan doonayaa inaan ogaado qofka aan dhab ahaantii ahay. Sidaas darteed waxaan dadka oo dhan weydiinayaa waxay iga aaminsan yihiin.” Qof ayaa ugu jawaabay: “Haddii aad taas samayso, weligaa ma ogaan doontid qofka aad tahay.” Maxay jawaabtiisu uga dhigan tahay?",o:["Dadku mar walba way been sheegaan","Qofku waa inuu iska ilaaliyaa dadka","Qofka aad tahay laguma qeexi karo oo keliya aragtida dadka kale","Qofku waa inuusan cidna weydiin wax fikrad ah"],a:2,e:"Qofka aad tahay laguma qeexi karo oo keliya aragtida dadka kale; aragtidooda waa xog, laakiin aqoonsigaaga adiga ayaa qayb weyn ka leh."}
+];
+let i=0,selected=null,startTime=0,answers=[],timer;
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$(id).classList.add("active");}
+function startGame(){i=0;answers=[];selected=null;startTime=Date.now();clearInterval(timer);timer=setInterval(updateTime,1000);show("game");render();}
+function updateTime(){let s=Math.floor((Date.now()-startTime)/1000);$("time").textContent=fmt(s)}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function render(){
+ const q=questions[i];selected=null;$("why").value="";
+ $("counter").textContent=`Su'aal ${i+1} / ${questions.length}`;
+ $("bar").style.width=((i+1)/questions.length*100)+"%";
+ $("question").textContent=q.q;
+ $("options").innerHTML=q.o.map((x,n)=>`<button class="option" onclick="choose(${n},this)"><span class="letter">${String.fromCharCode(65+n)}</span><span>${x}</span></button>`).join("");
+ $("next").textContent=i===questions.length-1?"DHAMMEE TARTANKA":"U GUDBI SU'AASHA XIGTA";
+}
+function choose(n,el){selected=n;document.querySelectorAll(".option").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")}
+function nextQuestion() {
+
+  if (selected === null) {
+    showAlert("Fadlan dooro jawaab.", "Jawaab dooro");
+    return;
+  }
+
+  const why = $("why").value.trim();
+
+  if (!why) {
+    showAlert(
+      "Fadlan sheeg sababta aad jawaabtaas u dooratay.",
+      "Sabab ayaa loo baahan yahay"
+    );
+    $("why").focus();
+    return;
+  }
+
+  answers.push({ selected, why });
+
+  if (i < questions.length - 1) {
+    i++;
+    render();
+  } else {
+    finish();
+  }
+}
+function showAlert(message, title = "Fariin") {
+  $("alertTitle").textContent = title;
+  $("alertMessage").textContent = message;
+  $("alertModal").style.display = "flex";
+}
+
+function closeAlert() {
+  $("alertModal").style.display = "none";
+}
+function finish(){
+ clearInterval(timer);let score=answers.reduce((n,x,k)=>n+(x.selected===questions[k].a?1:0),0);
+ let pct=Math.round(score/questions.length*100),dur=Math.floor((Date.now()-startTime)/1000);
+ $("score").textContent=`${score} / ${questions.length}`;$("percent").textContent=pct+"%";$("duration").textContent=fmt(dur);$("wrong").textContent=questions.length-score;
+ let level,msg;
+ if(score>=14){level="MASKAXDA UGU SARREYSA";msg="Cajiib! Su'aalihii aadka u adkaa waxaad uga jawaabtay si aad u fiican."}
+ else if(score>=11){level="MASKAX FIIQN";msg="Fikirkaaga iyo xallinta dhibaatooyinku aad bay u fiican yihiin."}
+ else if(score>=8){level="FIKIRE";msg="Waxaad leedahay fikir wanaagsan; dhowr su'aalood ayaa kaa rabay aragti kale."}
+ else if(score>=4){level="BILOWGA FIKIRKA";msg="Isku day fiican! Qaar ka mid ah su'aalaha waxay rabaan in dhinac kale laga eego."}
+ else{level="MAR KALE ISKU DAY";msg="Maanta su'aalihii ayaa kaa adkaaday. Dib ugu noqo jawaabaha oo isku day mar kale."}
+ $("level").textContent=level;$("message").textContent=msg;show("result");
+}
+function showReview(){
+ const r=$("review");r.classList.remove("hidden");
+ r.innerHTML="<h2 style='margin-top:25px'>Jawaabaha iyo sababaha</h2>"+questions.map((q,k)=>{
+  const a=answers[k],ok=a.selected===q.a;
+  return `<div class="review-item"><span class="badge ${ok?"good":"bad"}">${ok?"✓ SAX":"✕ KHALAD"}</span>
+  <h3>${k+1}. ${q.q}</h3><div class="small"><b>Jawaabtaadii:</b> ${q.o[a.selected]}<br>
+  <b>Jawaabta saxda ah:</b> ${q.o[q.a]}<br><br><b>Sababta saxda ah:</b> ${q.e}<br><br>
+  <b>Sababta aad adigu u dooratay:</b> ${escapeHtml(a.why)}</div></div>`;
+ }).join("");
+ r.scrollIntoView({behavior:"smooth"});
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+async function shareResult(){
+ const text=`🧠 Tartan Maskaxeed\nWaxaan helay ${$("score").textContent} — ${$("level").textContent}.\nMa iga badin kartaa?`;
+ if(navigator.share){try{await navigator.share({title:"Tartan Maskaxeed",text})}catch(e){}}
+ else{await navigator.clipboard?.writeText(text);$("shareNote").classList.remove("hidden");$("shareNote").textContent="Natiijada waa la koobiyeeyay. Hadda ku dheji kooxdaada."}
+}
+</script>
+</body>
+</html>
